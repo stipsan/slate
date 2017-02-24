@@ -491,11 +491,12 @@ function Plugin(options = {}) {
       const previousBlock = document.getClosestBlock(previous.key)
       const previousInline = document.getClosestInline(previous.key)
 
-      if (previousBlock == startBlock && previousInline && !previousInline.isVoid) {
+      if (previousBlock === startBlock && previousInline && !previousInline.isVoid) {
+        const extendOrCollapse = data.isShift ? 'extendBackward' : 'moveBackward'
         return state
           .transform()
           .collapseToEndOf(previous)
-          .moveBackward(1)
+          [extendOrCollapse](1)
           .apply()
       }
 

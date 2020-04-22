@@ -145,7 +145,12 @@ export const Editable = (props: EditableProps) => {
       return
     }
 
-    const newDomRange = selection && ReactEditor.toDOMRange(editor, selection)
+    let newDomRange: any
+    try {
+      newDomRange = selection && ReactEditor.toDOMRange(editor, selection)
+    } catch (err) {
+      return
+    }
 
     // If the DOM selection is already correct, we're done.
     if (

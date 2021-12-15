@@ -206,17 +206,40 @@ export const Editable = (props: EditableProps) => {
     // but Slate's value is not being updated through any operation
     // and thus it doesn't transform selection on its own
     if (selection && !ReactEditor.hasRange(editor, selection)) {
-      editor.selection = ReactEditor.toSlateRange(editor, domSelection, {
-        exactMatch: false,
-        suppressThrow: false,
-      })
+      try {
+        editor.selection = ReactEditor.toSlateRange(editor, domSelection, {
+          exactMatch: false,
+          suppressThrow: false,
+        })
+      } catch (err) {
+        // It's OK
+        // console.log(
+        //   'Could not restore selection on new value',
+        //   err,
+        //   editor.selection,
+        //   editor.children
+        // )
+      }
       return
     }
 
     // Otherwise the DOM selection is out of sync, so update it.
     state.isUpdatingSelection = true
 
-    const newDomRange = selection && ReactEditor.toDOMRange(editor, selection)
+    let newDomRange: DOMRange | undefined
+    try {
+      newDomRange = selection
+        ? ReactEditor.toDOMRange(editor, selection)
+        : undefined
+    } catch (err) {
+      // It's OK
+      // console.error(
+      //   'Could not update selection after being out of sync',
+      //   err,
+      //   editor.selection,
+      //   editor.children
+      // )
+    }
 
     if (newDomRange) {
       let startOffset = newDomRange.startOffset
